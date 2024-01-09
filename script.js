@@ -53,6 +53,11 @@ getCountryData('usa');
 // a lot of nested call callbacks
 // hard to read and maintain
 
+const renderError = (msg) => {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  //   countriesContainer.style.opacity = 1;
+};
+
 const renderCountry = (data, className = '') => {
   const html = `
   <article class="country ${className}">
@@ -69,9 +74,10 @@ const renderCountry = (data, className = '') => {
   </article>
   `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
+  //   countriesContainer.style.opacity = 1;
 };
 
+/*
 const getCountryAndNeighbour = (country) => {
   // AJAX call country 1
   const request = new XMLHttpRequest();
@@ -107,3 +113,61 @@ getCountryAndNeighbour('italy');
 // getCountryAndNeighbour('canada');
 // getCountryAndNeighbour('germany');
 // getCountryAndNeighbour('greece');
+*/
+/////////////////////////
+
+// MODERN WAY... PROMISES
+
+// step 1: fetch
+// returns a promise
+// const request = fetch('https://restcountries.com/v2/name/italy');
+
+// const getCountry = (country) => {
+//   // fetch returns a promise
+//   fetch(`https://restcountries.com/v2/name/${country}`)
+//     // then handles the fetch promise
+//     .then((response) => {
+//       console.log(response);
+//       // json method returns a promise
+//       return response.json();
+//     })
+//     // then handles the json promise
+//     .then((data) => {
+//       console.log(data);
+//       renderCountry(data[0]);
+//     });
+// };
+// getCountry('italy');
+
+// CHAINING PROMISES
+
+// simplified version of above ^
+
+const getCountry = (country) => {
+  // country 1
+  fetch(`https://restcountries.com/v2/name/${country}`)
+    .then((response) => response.json())
+    .then((data) => {
+      renderCountry(data[0]);
+      const neighbour = data[0].borders?.[0];
+      // country 2
+      return fetch(`https://restcountries.com/v2/alpha/${neighbour}`);
+    })
+    .then((response) => response.json())
+    .then((data) => renderCountry(data, 'neighbour'))
+    .catch((err) => {
+      console.error(`${err} <3 <3 <3`);
+      renderError(`Something went wrong <3 ${err} Try again!`);
+    })
+    // finally is when something needs to happen whether or not the promise fails
+    // such as to hide a rotating spinner, etc
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    });
+};
+
+btn.addEventListener('click', function () {
+  getCountry('italy');
+});
+
+getCountry('topkek')

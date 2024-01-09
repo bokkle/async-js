@@ -101,6 +101,7 @@ body {
 .btn-country {
   border: none;
   font-size: 2rem;
+  margin-top: 1rem;
   padding: 2rem 5rem;
   border-radius: 0.7rem;
   color: white;
