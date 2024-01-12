@@ -38,3 +38,7 @@ Test data:
 § Coordinates 2: 19.037, 72.873
 § Coordinates 3: -33.933, 18.474
 */
+
+// const whereAmI = (lat, lng) => {
+//     fetch(`https://geocode.xyz/${}`)
+// }
