@@ -39,6 +39,21 @@ Test data:
 § Coordinates 3: -33.933, 18.474
 */
 
-// const whereAmI = (lat, lng) => {
-//     fetch(`https://geocode.xyz/${}`)
-// }
+const whereAmI = (lat, lng) => {
+  fetch(
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Country not found');
+        ``;
+      }
+      return response.json();
+    })
+    .then((data) =>
+      console.log(`You are in ${data.city}, ${data.countryName}.`)
+    )
+    .catch((err) => console.error(`Error <3`));
+};
+console.log(whereAmI(52.508, 13.381));
+
