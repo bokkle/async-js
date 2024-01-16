@@ -55,7 +55,7 @@ const renderCountry = (data, className = '') => {
     </article>
     `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  //   countriesContainer.style.opacity = 1;
+  // countriesContainer.style.opacity = 1;
 };
 
 const whereAmI = (lat, lng) => {
@@ -78,4 +78,5 @@ const whereAmI = (lat, lng) => {
 console.log(whereAmI(52.508, 13.381));
 console.log(whereAmI(19.037, 72.873));
 console.log(whereAmI(-33.933, 18.474));
-// :)
+
+// :) O
