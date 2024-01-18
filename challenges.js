@@ -75,8 +75,35 @@ const whereAmI = (lat, lng) => {
     .then((kek) => renderCountry(kek))
     .catch((err) => console.error(`Error <3`));
 };
-console.log(whereAmI(52.508, 13.381));
-console.log(whereAmI(19.037, 72.873));
-console.log(whereAmI(-33.933, 18.474));
+// console.log(whereAmI(52.508, 13.381));
+// console.log(whereAmI(19.037, 72.873));
+// console.log(whereAmI(-33.933, 18.474));
 
-// :) O :)
+// instructor solution
+
+const whereAmI2 = (lat, lng) => {
+  fetch(
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+  )
+    .then((res) => {
+      if (!res.ok) throw new Error(`Problem with geocoding ${res.status}`);
+      return res.json();
+    })
+    .then((data) => {
+      console.log(data);
+      console.log(`You are in ${data.city}, ${data.countryName}`);
+
+      return fetch(`https://bigdatacloud.net/${data.countryName}`);
+    })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`Country not found (${res.status})`);
+      }
+      return response.json();
+    })
+    .then((data) => renderCountry(data[0]))
+    .catch((err) => console.error(`${err.message} :)`));
+};
+whereAmI2(52.508, 13.381);
+// whereAmI2(19.037, 72.873);
+// whereAmI2(-33.933, 18.474);
