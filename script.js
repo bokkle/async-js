@@ -286,7 +286,6 @@ wait(1)
 
 Promise.resolve('abc').then((x) => console.log(x));
 Promise.reject(new Error('Problem!')).catch((x) => console.log(x));
-*/
 
 console.log('Getting position');
 
@@ -334,3 +333,152 @@ const whereAmI2 = () => {
 };
 
 btn.addEventListener('click', whereAmI2);
+
+// ASYNC AWAIT
+
+const getPosition = () => {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+// const whereAmI = async (country) => {
+//   const pos = await getPosition();
+//   const { latitude: lat, longitude: lng } = pos.coords;
+//   // fetch(
+//   //   'https://geocode.maps.co/search?q=${country}&api_key=65aab4d23ade5448425425xea1c7142'
+//   // ).then((res) => console.log(res));
+
+//   // below === above
+//   const res = await fetch(
+//     `https://geocode.maps.co/search?q=${country}&api_key=65aab4d23ade5448425425xea1c7142`
+//   );
+//   const data = res.json();
+//   console.log(data);
+//   renderCountry(data[0]);
+// };
+// whereAmI('Canada');
+// console.log('FIRST');
+
+// try {
+//   let y = 1;
+//   const x = 2;
+//   y = 3;
+// } catch (err) {
+//   alert(err.message);
+// }
+
+const whereAmI = async () => {
+  try {
+    //geolocation
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
+
+    //reverse geocoding
+    const resGeo = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+    );
+    if (!resGeo.ok) throw new Error('Problem getting location data');
+    const dataGeo = await resGeo.json();
+    console.log(dataGeo);
+
+    //country data
+    const res = await fetch(`https://bigdatacloud.net/${dataGeo.countryName}`);
+    if (!res.ok) throw new Error('Problem getting country');
+    const data = await res.json();
+    console.log(data);
+    renderCountry(data[0]);
+  } catch (err) {
+    console.error(`${err} :):)`);
+    renderError(`......${err.message}`);
+  }
+};
+whereAmI();
+*/
+
+const get3Countries = async (c1, c2, c3) => {
+  try {
+    // const [data1] = await getJSON(
+    //   `https://restcountries.eu/rest/v2/name/${c1}`
+    // );
+    // const [data2] = await getJSON(
+    //   `https://restcountries.eu/rest/v2/name/${c2}`
+    // );
+    // const [data3] = await getJSON(
+    //   `https://restcountries.eu/rest/v2/name/${c3}`
+    // );
+
+    // all 3 of these run/load at the same time, instead of linearly as above
+    const data = await Promise.all([
+      getJSON(`https://restcountries.eu/rest/v2/name/${c1}`),
+      getJSON(`https://restcountries.eu/rest/v2/name/${c2}`),
+      getJSON(`https://restcountries.eu/rest/v2/name/${c3}`),
+    ]);
+    console.log(data.map((d) => d[0].capital));
+
+    // console.log([data1.capital, data2.capital, data3.capital]);
+  } catch (err) {
+    console.error(err);
+  }
+};
+get3Countries('portugal', 'canada', 'tanzania');
+
+// other promise combinators
+
+// Promise.race
+// recieves array of promises, returns a promise
+// good to prevend against never ending promises (like if user has bad internet)
+/*
+async () => {
+  const res = await Promise.race([
+    //these 3 promises will race against each other
+    //whichever loads the fastest, is the result that wins the race
+    //if all get rejected, the first one to get rejected is returned
+    getJSON(`https://restcountries.eu/rest/v2/name/italy`),
+    getJSON(`https://restcountries.eu/rest/v2/name/germany`),
+    getJSON(`https://restcountries.eu/rest/v2/name/canada`),
+  ]);
+  console.log(res[0]);
+};
+
+const timeout = (sec) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error('Request took too long!'));
+    }, sec * 1000);
+  });
+};
+
+Promise.race([
+  getJSON(`https://restcountries.eu/rest/v2/name/canada`),
+  timeout(5),
+]).then(((res) => console.log(res[0])).catch((err) => console.error(err)));
+
+// Promise.allSettled
+// takes array of promises, returns array of all the settled promises, regardless of result
+Promise.allSettled([
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another Success'),
+]).then((res) => console.log(res));
+
+// Promise.all short circuits if there is an error, allSettled does not
+Promise.all([
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another Success'),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err));
+*/
+
+// Promise.any
+// returns the first fulfilled promise
+// ignores rejected promise
+Promise.any([
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another Success'),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err));
